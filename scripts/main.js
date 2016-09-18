@@ -26,16 +26,32 @@ var App = React.createClass({
     this.setState({fishes: this.state.fishes});
 
   },
+  addOrder: function(key) {
+    this.state.order[key] = this.state.order[key] + 1 || 1;
+    this.setState({order: this.state.order});
+
+  },
   loadFishes: function() {
     this.setState({
       fishes: require('./sample-fishes.js')
     });
   },
+  renderFish: function(key) {
+    return (
+      <Fish key={key} index={key} details={this.state.fishes[key]} addOrder={this.addOrder} />
+    )
+  },
+
   render : function(){
     return (
       <div className="catch-of-the-day">
       <div className="menu">
         <Header tagline="Fresh Seafood Market"/>
+        <ul>
+          
+         {Object.keys(this.state.fishes).map(this.renderFish)}
+          
+        </ul>
       </div>
       <Order />
       <Inventory addFish={this.addFish} loadFishes={this.loadFishes}/>
@@ -76,6 +92,30 @@ var Inventory = React.createClass({
        <AddFishForm addFish={this.props.addFish}/>
        <button onClick={this.props.loadFishes}>Load Sample Fishes</button>
      </div>
+    )
+  }
+})
+
+var Fish = React.createClass({
+  onButtonClick: function() {
+    this.props.addOrder(this.props.index);
+  },
+  render: function() {
+    var details = this.props.details;
+    var isAvailable = (details.status === 'available' ? true : false);
+    var buttonText = (isAvailable ? 'Add To Order' : 'Sold Out!');
+    return (
+      <li className="menu-fish"> 
+        <img src={details.image} alt={details.name} />
+        <h3 className="fish-name">
+          {details.name}
+          <span className="price">{helper.formatPrice(details.price)}</span>
+        </h3>
+        <p>{details.desc}</p>
+        <button disabled={!isAvailable} onClick={this.onButtonClick}>
+          {buttonText}
+        </button>
+      </li>
     )
   }
 })
