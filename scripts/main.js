@@ -13,20 +13,24 @@ var helper = require('./helpers');
 var App = React.createClass({
   getInitialState: function() {
     return (
-    {
-      fishes: {},
-      order:{}
-    }
+      {
+        fishes: {},
+        order:{}
+      }
     )
   },
   addFish: function(fish) {
-    var timeStamp = new Date();
+    var timeStamp = (new Date()).getTime();
     this.state.fishes['fish' + timeStamp] = fish
 
     this.setState({fishes: this.state.fishes});
-    
-  },
 
+  },
+  loadFishes: function() {
+    this.setState({
+      fishes: require('./sample-fishes.js')
+    });
+  },
   render : function(){
     return (
       <div className="catch-of-the-day">
@@ -34,7 +38,7 @@ var App = React.createClass({
         <Header tagline="Fresh Seafood Market"/>
       </div>
       <Order />
-      <Inventory addFish={this.addFish} />
+      <Inventory addFish={this.addFish} loadFishes={this.loadFishes}/>
     </div>
   )
   }
@@ -70,6 +74,7 @@ var Inventory = React.createClass({
      <div>
        <h3>Inventory</h3>
        <AddFishForm addFish={this.props.addFish}/>
+       <button onClick={this.props.loadFishes}>Load Sample Fishes</button>
      </div>
     )
   }
@@ -78,20 +83,31 @@ var Inventory = React.createClass({
 var AddFishForm = React.createClass({
   myFunction: function(event) {
     event.preventDefault();
-    var fish = {};
-    fish.name = this.refs.name.value;
-    fish.price = this.refs.price.value;
+    var fish = {
+      name : this.refs.name.value,
+      price : this.refs.price.value,
+      status : this.refs.status.value,
+      desc : this.refs.desc.value,
+      image : this.refs.image.value
+    }
+    // 3. Add the fish to the App State
     this.props.addFish(fish);
+    this.refs.fishForm.reset();
   
   },
   render: function() {
     return (
-      <form onSubmit={this.myFunction}>
-        <input type="text" ref="name"/>
-        <input type="text" ref="price"/>
-        <input type="submit"/>
+      <form className="fish-edit" ref="fishForm" onSubmit={this.createFish}>
+        <input type="text" ref="name" placeholder="Fish Name"/>
+        <input type="text" ref="price" placeholder="Fish Price" />
+        <select ref="status">
+          <option value="available">Fresh!</option>
+          <option value="unavailable">Sold Out!</option>
+        </select>
+        <textarea type="text" ref="desc" placeholder="Desc"></textarea>
+        <input type="text" ref="image" placeholder="URL to Image" />
+        <button type="submit">+ Add Item </button>
       </form>
-
     )
   }
 })
