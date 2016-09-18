@@ -53,7 +53,7 @@ var App = React.createClass({
           
         </ul>
       </div>
-      <Order />
+      <Order orders={this.state} />
       <Inventory addFish={this.addFish} loadFishes={this.loadFishes}/>
     </div>
   )
@@ -79,7 +79,12 @@ var Header = React.createClass({
 var Order = React.createClass({
   render : function() {
     return (
-    <p>Order</p>
+      <div>
+        <h2> Your Order</h2>
+        <ul className="order">
+          
+        </ul>
+      </div>
     )
   }
 })
